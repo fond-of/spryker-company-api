@@ -29,8 +29,6 @@ class CompanyApiValidatorPlugin extends AbstractPlugin implements ApiValidatorPl
      *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
-     * @throws \Spryker\Zed\Api\Business\Exception\ApiValidationException
-     *
      * @return \Generated\Shared\Transfer\ApiValidationErrorTransfer[]
      */
     public function validate(ApiDataTransfer $apiDataTransfer): array

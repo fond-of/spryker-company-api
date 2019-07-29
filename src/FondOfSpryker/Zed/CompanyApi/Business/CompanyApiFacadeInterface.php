@@ -65,7 +65,7 @@ interface CompanyApiFacadeInterface
 
     /**
      * Specification:
-     *  - Finds companies by filter transcer, including sort, conditions and pagination.
+     *  - Finds companies by filter transfer, including sort, conditions and pagination.
      *
      * @api
      *

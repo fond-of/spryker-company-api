@@ -25,7 +25,7 @@ class CompanyApiValidator implements CompanyApiValidatorInterface
      *
      * @return array
      */
-    protected function assertRequiredField(array $data, $field, array $errors)
+    protected function assertRequiredField(array $data, string $field, array $errors): array
     {
         if (!isset($data[$field]) || (array_key_exists($field, $data) && !$data[$field])) {
             $message = sprintf('Missing value for required field "%s"', $field);
