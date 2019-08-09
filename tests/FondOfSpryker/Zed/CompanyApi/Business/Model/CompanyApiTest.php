@@ -250,8 +250,6 @@ class CompanyApiTest extends Unit
     }
 
     /**
-     * TODO:last line
-     *
      * @return void
      */
     public function testGet(): void
@@ -321,8 +319,6 @@ class CompanyApiTest extends Unit
     }
 
     /**
-     * TODO: last line
-     *
      * @return void
      */
     public function testUpdateEntityNotSavedException(): void
@@ -393,7 +389,6 @@ class CompanyApiTest extends Unit
     {
         $this->companyFacadeMock->expects($this->atLeastOnce())
             ->method('delete')
-            ->with($this->companyTransfer->setIdCompany($this->idCompany))
             ->willReturn(true);
 
         $this->apiQueryContainerMock->expects($this->atLeastOnce())
