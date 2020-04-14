@@ -10,8 +10,9 @@
   ],
   "require": {
     "php": ">=7.1",
-    "spryker/api": "^0.2",
-    "spryker/company": "^1.4"
+    "spryker/api": "^0.1.0 || ^0.2.0 || ^0.3.0",
+    "spryker/api-query-builder": "^0.1.0",
+    "spryker/company": "^1.0.0"
   },
   "require-dev": {
     "codeception/codeception": "^2.4",
