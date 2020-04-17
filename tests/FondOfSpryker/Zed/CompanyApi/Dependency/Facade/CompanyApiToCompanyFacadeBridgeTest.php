@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FondOfSpryker\Zed\CompanyApi\Dependency\Facade;
 
 use Codeception\Test\Unit;
@@ -107,8 +106,7 @@ class CompanyApiToCompanyFacadeBridgeTest extends Unit
     {
         $this->companyFacadeMock->expects($this->atLeastOnce())
             ->method('delete')
-            ->with($this->companyTransferMock)
-            ->willReturn(true);
+            ->with($this->companyTransferMock);
 
         $this->companyApiToCompanyFacadeBridge->delete($this->companyTransferMock);
 
