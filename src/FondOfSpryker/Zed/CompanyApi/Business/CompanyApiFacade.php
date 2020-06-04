@@ -14,7 +14,7 @@ use Spryker\Zed\Kernel\Business\AbstractFacade;
 class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterface
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
@@ -28,7 +28,7 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
@@ -42,7 +42,7 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
@@ -50,7 +50,6 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
-
      */
     public function updateCompany(int $idCompany, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
@@ -58,14 +57,13 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
      * @param int $idCompany
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
-
      */
     public function removeCompany(int $idCompany): ApiItemTransfer
     {
@@ -73,7 +71,7 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
@@ -87,7 +85,7 @@ class CompanyApiFacade extends AbstractFacade implements CompanyApiFacadeInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
