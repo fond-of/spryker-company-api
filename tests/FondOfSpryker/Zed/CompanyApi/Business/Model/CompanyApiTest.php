@@ -1,6 +1,5 @@
 <?php
 
-
 namespace FondOfSpryker\Zed\CompanyApi\Business\Model;
 
 use ArrayObject;
@@ -388,8 +387,7 @@ class CompanyApiTest extends Unit
     public function testRemove(): void
     {
         $this->companyFacadeMock->expects($this->atLeastOnce())
-            ->method('delete')
-            ->willReturn(true);
+            ->method('delete');
 
         $this->apiQueryContainerMock->expects($this->atLeastOnce())
             ->method('createApiItem')
