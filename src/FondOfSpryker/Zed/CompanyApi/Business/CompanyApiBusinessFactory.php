@@ -30,7 +30,7 @@ class CompanyApiBusinessFactory extends AbstractBusinessFactory
             $this->getApiQueryBuilderQueryContainer(),
             $this->getQueryContainer(),
             $this->getCompanyFacade(),
-            $this->createTransferMapper()
+            $this->createTransferMapper(),
         );
     }
 

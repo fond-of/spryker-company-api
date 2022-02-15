@@ -2,7 +2,6 @@
 
 namespace FondOfSpryker\Zed\CompanyApi\Business\Model;
 
-use ArrayObject;
 use Codeception\Test\Unit;
 use Exception;
 use FondOfSpryker\Zed\CompanyApi\Business\Mapper\TransferMapperInterface;
@@ -15,8 +14,6 @@ use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\CompanyResponseTransfer;
 use Generated\Shared\Transfer\CompanyTransfer;
-use Generated\Shared\Transfer\ResponseMessageTransfer;
-use Iterator;
 
 class CompanyApiTest extends Unit
 {
@@ -29,11 +26,6 @@ class CompanyApiTest extends Unit
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiItemTransfer
      */
     protected $apiItemTransferMock;
-
-    /**
-     * @var \FondOfSpryker\Zed\CompanyApi\Business\Model\CompanyApi
-     */
-    protected $companyApi;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\FondOfSpryker\Zed\CompanyApi\Dependency\QueryContainer\CompanyApiToApiQueryContainerInterface
@@ -61,11 +53,6 @@ class CompanyApiTest extends Unit
     protected $transferMapperMock;
 
     /**
-     * @var array
-     */
-    protected $transferData;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     protected $companyResponseTransferMock;
@@ -76,34 +63,14 @@ class CompanyApiTest extends Unit
     protected $companyTransferMock;
 
     /**
-     * @var int
-     */
-    protected $idCompany;
-
-    /**
-     * @var $this
-     */
-    protected $companyTransfer;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Generated\Shared\Transfer\ApiRequestTransfer
      */
     protected $apiRequestTransferMock;
 
     /**
-     * @var \ArrayObject
+     * @var \FondOfSpryker\Zed\CompanyApi\Business\Model\CompanyApi
      */
-    protected $responseMessages;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    protected $responseMessageTransferMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $iteratorMock;
+    protected $companyApi;
 
     /**
      * @return void
@@ -152,23 +119,6 @@ class CompanyApiTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->responseMessageTransferMock = $this->getMockBuilder(ResponseMessageTransfer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->iteratorMock = $this->getMockBuilder(Iterator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->responseMessages = new ArrayObject(
-            [$this->responseMessageTransferMock]
-        );
-        $this->transferData = [['idCompany' => 1]];
-
-        $this->companyTransfer = (new CompanyTransfer());
-
-        $this->idCompany = 1;
-
         $this->companyApi = new CompanyApi(
             $this->apiQueryContainerMock,
             $this->apiQueryBuilderQueryContainerMock,
@@ -183,27 +133,38 @@ class CompanyApiTest extends Unit
      */
     public function testAdd(): void
     {
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
-            ->method('getData')
-            ->willReturn($this->transferData[0]);
+        $data = [];
+        $idCompany = 1;
 
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
+            ->method('getData')
+            ->willReturn($data);
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('create')
             ->willReturn($this->companyResponseTransferMock);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
+            ->method('getCompanyTransfer')
+            ->willReturn($this->companyTransferMock);
+
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
             ->method('getIsSuccessful')
             ->willReturn(true);
 
-        $this->companyFacadeMock->expects($this->atLeastOnce())
-            ->method('findCompanyById')
-            ->willReturn($this->companyTransferMock);
+        $this->companyTransferMock->expects(static::atLeastOnce())
+            ->method('getIdCompany')
+            ->willReturn($idCompany);
 
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
             ->method('createApiItem')
+            ->with($this->companyTransferMock, $idCompany)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->companyApi->add($this->apiDataTransferMock));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->companyApi->add($this->apiDataTransferMock)
+        );
     }
 
     /**
@@ -211,39 +172,30 @@ class CompanyApiTest extends Unit
      */
     public function testAddEntityNotSavedException(): void
     {
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
-            ->method('getData')
-            ->willReturn($this->transferData[0]);
+        $data = [];
 
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
+            ->method('getData')
+            ->willReturn($data);
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('create')
             ->willReturn($this->companyResponseTransferMock);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
-            ->method('getIsSuccessful')
-            ->willReturn(false);
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
+            ->method('getCompanyTransfer')
+            ->willReturn(null);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
-            ->method('getMessages')
-            ->willReturn($this->iteratorMock);
+        $this->companyResponseTransferMock->expects(static::never())
+            ->method('getIsSuccessful');
 
-        $this->iteratorMock->expects($this->once())
-            ->method('rewind');
 
-        $this->iteratorMock->expects($this->exactly(1))
-            ->method('next');
-
-        $this->iteratorMock->expects($this->exactly(2))
-            ->method('valid')
-            ->willReturnOnConsecutiveCalls(true);
-
-        $this->iteratorMock->expects($this->exactly(1))
-            ->method('current')
-            ->willReturn($this->responseMessageTransferMock);
+        $this->apiQueryContainerMock->expects(static::never())
+            ->method('createApiItem');
 
         try {
             $this->companyApi->add($this->apiDataTransferMock);
-            $this->fail();
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -253,17 +205,19 @@ class CompanyApiTest extends Unit
      */
     public function testGet(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $idCompany = 1;
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('findCompanyById')
-            ->with($this->idCompany)
+            ->with($idCompany)
             ->willReturn($this->companyTransferMock);
 
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
             ->method('createApiItem')
-            ->with($this->companyTransferMock, $this->idCompany)
+            ->with($this->companyTransferMock, $idCompany)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->companyApi->get($this->idCompany));
+        static::assertEquals($this->apiItemTransferMock, $this->companyApi->get($idCompany));
     }
 
     /**
@@ -271,19 +225,21 @@ class CompanyApiTest extends Unit
      */
     public function testGetWithEntityNotFoundException(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $idCompany = 1;
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('findCompanyById')
-            ->with($this->idCompany)
+            ->with($idCompany)
             ->willReturn(null);
 
         $this->apiQueryContainerMock->expects($this->never())
             ->method('createApiItem')
-            ->with($this->companyTransferMock, $this->idCompany)
+            ->with($this->companyTransferMock, $idCompany)
             ->willReturn($this->apiItemTransferMock);
 
         try {
-            $this->companyApi->get($this->idCompany);
-            $this->fail();
+            $this->companyApi->get($idCompany);
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -293,28 +249,48 @@ class CompanyApiTest extends Unit
      */
     public function testUpdate(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $idCompany = 1;
+        $data = [];
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('findCompanyById')
-            ->with($this->idCompany)
+            ->with($idCompany)
             ->willReturn($this->companyTransferMock);
 
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
-            ->willReturn($this->transferData);
+            ->willReturn($data);
 
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $this->companyTransferMock->expects(static::atLeastOnce())
+            ->method('fromArray')
+            ->with($data, true)
+            ->willReturn($this->companyTransferMock);
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('update')
             ->willReturn($this->companyResponseTransferMock);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
+            ->method('getCompanyTransfer')
+            ->willReturn($this->companyTransferMock);
+
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
             ->method('getIsSuccessful')
             ->willReturn(true);
 
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->companyTransferMock->expects(static::atLeastOnce())
+            ->method('getIdCompany')
+            ->willReturn($idCompany);
+
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
             ->method('createApiItem')
+            ->with($this->companyTransferMock, $idCompany)
             ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->companyApi->update($this->idCompany, $this->apiDataTransferMock));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->companyApi->update($idCompany, $this->apiDataTransferMock)
+        );
     }
 
     /**
@@ -322,44 +298,38 @@ class CompanyApiTest extends Unit
      */
     public function testUpdateEntityNotSavedException(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $idCompany = 1;
+        $data = [];
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('findCompanyById')
-            ->with($this->idCompany)
+            ->with($idCompany)
             ->willReturn($this->companyTransferMock);
 
-        $this->apiDataTransferMock->expects($this->atLeastOnce())
+        $this->apiDataTransferMock->expects(static::atLeastOnce())
             ->method('getData')
-            ->willReturn($this->transferData);
+            ->willReturn($data);
 
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $this->companyTransferMock->expects(static::atLeastOnce())
+            ->method('fromArray')
+            ->with($data, true)
+            ->willReturn($this->companyTransferMock);
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('update')
+            ->with($this->companyTransferMock)
             ->willReturn($this->companyResponseTransferMock);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
-            ->method('getIsSuccessful')
-            ->willReturn(false);
+        $this->companyResponseTransferMock->expects(static::atLeastOnce())
+            ->method('getCompanyTransfer')
+            ->willReturn(null);
 
-        $this->companyResponseTransferMock->expects($this->atLeastOnce())
-            ->method('getMessages')
-            ->willReturn($this->iteratorMock);
-
-        $this->iteratorMock->expects($this->once())
-            ->method('rewind');
-
-        $this->iteratorMock->expects($this->exactly(1))
-            ->method('next');
-
-        $this->iteratorMock->expects($this->exactly(2))
-            ->method('valid')
-            ->willReturnOnConsecutiveCalls(true);
-
-        $this->iteratorMock->expects($this->exactly(1))
-            ->method('current')
-            ->willReturn($this->responseMessageTransferMock);
+        $this->companyResponseTransferMock->expects(static::never())
+            ->method('getIsSuccessful');
 
         try {
-            $this->companyApi->update($this->idCompany, $this->apiDataTransferMock);
-            $this->fail();
+            $this->companyApi->update($idCompany, $this->apiDataTransferMock);
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -369,14 +339,22 @@ class CompanyApiTest extends Unit
      */
     public function testUpdateEntityNotFoundException(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
+        $idCompany = 1;
+
+        $this->companyFacadeMock->expects(static::atLeastOnce())
             ->method('findCompanyById')
-            ->with($this->idCompany)
+            ->with($idCompany)
             ->willReturn(null);
 
+        $this->companyFacadeMock->expects(static::never())
+            ->method('update');
+
+        $this->apiQueryContainerMock->expects(static::never())
+            ->method('createApiItem');
+
         try {
-            $this->companyApi->update($this->idCompany, $this->apiDataTransferMock);
-            $this->fail();
+            $this->companyApi->update($idCompany, $this->apiDataTransferMock);
+            static::fail();
         } catch (Exception $e) {
         }
     }
@@ -386,13 +364,26 @@ class CompanyApiTest extends Unit
      */
     public function testRemove(): void
     {
-        $this->companyFacadeMock->expects($this->atLeastOnce())
-            ->method('delete');
+        $idCompany = 1;
 
-        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+        $this->companyFacadeMock->expects(static::atLeastOnce())
+            ->method('delete')
+            ->with(
+                static::callback(
+                    static function(CompanyTransfer $companyTransfer) use ($idCompany) {
+                        return $companyTransfer->getIdCompany() === $idCompany;
+                    }
+                )
+            );
+
+        $this->apiQueryContainerMock->expects(static::atLeastOnce())
             ->method('createApiItem')
-            ->with([], $this->idCompany);
+            ->with([], $idCompany)
+            ->willReturn($this->apiItemTransferMock);
 
-        $this->assertInstanceOf(ApiItemTransfer::class, $this->companyApi->remove($this->idCompany));
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->companyApi->remove($idCompany)
+        );
     }
 }
