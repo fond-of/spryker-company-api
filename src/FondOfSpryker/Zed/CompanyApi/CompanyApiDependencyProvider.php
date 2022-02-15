@@ -11,9 +11,24 @@ use Spryker\Zed\Kernel\Container;
 
 class CompanyApiDependencyProvider extends AbstractBundleDependencyProvider
 {
+    /**
+     * @var string
+     */
     public const FACADE_COMPANY = 'FACADE_COMPANY';
+
+    /**
+     * @var string
+     */
     public const PROPEL_QUERY_COMPANY = 'PROPEL_QUERY_COMPANY';
+
+    /**
+     * @var string
+     */
     public const QUERY_CONTAINER_API = 'QUERY_CONTAINER_API';
+
+    /**
+     * @var string
+     */
     public const QUERY_CONTAINER_API_QUERY_BUILDER = 'QUERY_CONTAINER_API_QUERY_BUILDER';
 
     /**
@@ -97,7 +112,7 @@ class CompanyApiDependencyProvider extends AbstractBundleDependencyProvider
     {
         $container[static::QUERY_CONTAINER_API_QUERY_BUILDER] = function (Container $container) {
             return new CompanyApiToApiQueryBuilderQueryContainerBridge(
-                $container->getLocator()->apiQueryBuilder()->queryContainer()
+                $container->getLocator()->apiQueryBuilder()->queryContainer(),
             );
         };
 

@@ -84,18 +84,14 @@ class CompanyApi implements CompanyApiInterface
         $data = (array)$apiDataTransfer->getData();
         $companyTransfer = (new CompanyTransfer())->fromArray($data, true);
         $companyResponseTransfer = $this->companyFacade->create($companyTransfer);
+        $companyTransfer = $companyResponseTransfer->getCompanyTransfer();
 
-        if (!$companyResponseTransfer->getIsSuccessful()) {
-            $errors = [];
-
-            foreach ($companyResponseTransfer->getMessages() as $error) {
-                $errors[] = $error->getText();
-            }
-
-            throw new EntityNotSavedException('Could not add company: ' . implode(',', $errors));
+        if ($companyTransfer === null || !$companyResponseTransfer->getIsSuccessful()) {
+            throw new EntityNotSavedException(
+                'Could not add company.',
+                ApiConfig::HTTP_CODE_INTERNAL_ERROR,
+            );
         }
-
-        $companyTransfer = $this->companyFacade->findCompanyById($companyTransfer->getIdCompany());
 
         return $this->apiQueryContainer->createApiItem($companyTransfer, $companyTransfer->getIdCompany());
     }
@@ -136,23 +132,16 @@ class CompanyApi implements CompanyApiInterface
         }
 
         $data = (array)$apiDataTransfer->getData();
-        $companyTransfer = (new CompanyTransfer())
-            ->fromArray($data, true)
-            ->setIdCompany($idCompany);
-
+        $companyTransfer = $companyTransfer->fromArray($data, true);
         $companyResponseTransfer = $this->companyFacade->update($companyTransfer);
+        $companyTransfer = $companyResponseTransfer->getCompanyTransfer();
 
-        if (!$companyResponseTransfer->getIsSuccessful()) {
-            $errors = [];
-
-            foreach ($companyResponseTransfer->getMessages() as $message) {
-                $errors[] = $message->getText();
-            }
-
-            throw new EntityNotSavedException('Could not update company: ' . implode(',', $errors));
+        if ($companyTransfer === null || !$companyResponseTransfer->getIsSuccessful()) {
+            throw new EntityNotSavedException(
+                'Could not update company.',
+                ApiConfig::HTTP_CODE_INTERNAL_ERROR,
+            );
         }
-
-        $companyTransfer = $this->companyFacade->findCompanyById($companyTransfer->getIdCompany());
 
         return $this->apiQueryContainer->createApiItem($companyTransfer, $companyTransfer->getIdCompany());
     }
